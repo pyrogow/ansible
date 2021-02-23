@@ -1,0 +1,11 @@
+---
+- hosts: VM1
+  become: true
+  become_method: sudo
+  become_user: root
+  remote_user: vagrant
+  # roles:
+  #  - epel
+  #  - nginx
+  roles:
+    - Role A

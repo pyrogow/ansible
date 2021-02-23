@@ -1,0 +1,8 @@
+[Unit]
+Description=Run spring-petclinic with Java
+
+[Service]
+ExecStart=/usr/bin/java -Dserver.port={{ petclinic_port }} -jar {{ artifact_path }}/{{ artifact_name }}
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,69 @@
+---
+- name: Install required software
+  apt: name={{ item }} state=present
+  become: yes
+  with_items:
+    - build-essential
+    - python-dev
+    - libmysqlclient-dev
+    - python-pip
+    - mysql-server
+    - mysql-client
+
+- name: Install the MySQL-python through pip
+  become: yes
+  pip:
+    name: "{{ item }}"
+    state: forcereinstall
+  with_items:
+    - pip
+    - MySQL-python
+
+# - name: Configure SELinux to start mysql on any port
+#   become: yes
+#   seboolean: name=mysql_connect_any state=true persistent=yes
+#   when: ansible_selinux.status == "enabled"
+
+- name: Create Mysql configuration file
+  become: yes
+  template: src=my.cnf.j2 dest=/root/.my.cnf owner=root mode=0600
+  notify:
+    - restart mysql
+
+- name: Start Mysql Service
+  become: yes
+  service: name=mysql state=started enabled=yes
+
+- name: Create a new database with name petclinic
+  become: yes
+  mysql_db:
+    name: "{{ mysql_db_name }}"
+    state: present
+    login_password: "{{ mysql_root_password }}"
+    # login_unix_socket: /var/lib/mysql/mysql.sock
+    login_user: "{{ mysql_login }}"
+
+- name: Update mysql user password
+  become: yes
+  mysql_user:
+    name: "{{ mysql_login }}"
+    password: "{{ mysql_root_password }}"
+    priv: "*.*:ALL,GRANT"
+    state: present
+    login_user: "{{ mysql_login }}"
+    login_password: "{{ mysql_root_password }}"
+    host: "{{ item }}"
+  with_items:
+    - "{{ ansible_hostname }}"
+    - "{{ petclinic_server }}"
+    - localhost
+    - ::1
+    - 0.0.0.0
+  notify:
+    - restart mysql
+
+- name: Store mysql root password
+  become: yes
+  template: src=mysqld.cnf.j2 dest=/etc/mysql/mysql.conf.d/mysqld.cnf
+  notify:
+    - restart mysql

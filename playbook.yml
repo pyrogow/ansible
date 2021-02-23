@@ -1,0 +1,30 @@
+---
+- hosts: VM3
+  become: true
+  become_method: sudo
+  become_user: root
+  remote_user: vagrant
+  roles:
+    - Role B
+
+- hosts: VM2
+  become: true
+  become_method: sudo
+  become_user: root
+  remote_user: vagrant
+  # roles:
+  #  - epel
+  #  - nginx
+  roles:
+    - Role C
+
+- hosts: VM1
+  become: true
+  become_method: sudo
+  become_user: root
+  remote_user: vagrant
+  # roles:
+  #  - epel
+  #  - nginx
+  roles:
+    - Role A

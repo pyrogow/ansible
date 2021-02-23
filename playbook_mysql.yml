@@ -1,0 +1,8 @@
+---
+- hosts: VM3
+  become: true
+  become_method: sudo
+  become_user: root
+  remote_user: vagrant
+  roles:
+    - Role B

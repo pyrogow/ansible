@@ -1,0 +1,7 @@
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+[VM1]
+VM1 ansible_host=192.168.123.10
+[VM2]
+VM2 ansible_host=192.168.123.11
+[VM3]
+VM3 ansible_host=192.168.123.12
